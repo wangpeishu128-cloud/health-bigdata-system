@@ -1,0 +1,2931 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>">
+    <title>管理员控制台 - 健康大数据应用创新研发中心统计分析决策系统</title>
+    <style>
+        :root {
+            --bg: #f0f6fb;
+            --surface: #ffffff;
+            --deep: #0f2f3d;
+            --soft: #5f7a88;
+            --line: #d4e3ed;
+            --pri: #0e7490;
+            --warn: #ea580c;
+            --ok: #16a34a;
+            --danger: #dc2626;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(500px 260px at 0% 0%, rgba(14, 116, 144, 0.12), transparent 70%),
+                radial-gradient(560px 260px at 100% 10%, rgba(234, 88, 12, 0.1), transparent 72%),
+                var(--bg);
+            color: var(--deep);
+            font-family: "Microsoft YaHei UI", "PingFang SC", "Noto Sans SC", sans-serif;
+        }
+
+        .topbar {
+            padding: 16px 24px;
+            background: linear-gradient(90deg, #07364a, #0e5f76);
+            color: #ecfeff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .title-container {
+            text-align: center;
+        }
+        
+        .main-title {
+            margin: 0;
+            font-size: clamp(18px, 2.1vw, 26px);
+            letter-spacing: 0.4px;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+        
+        .sub-title {
+            margin: 4px 0 0 0;
+            font-size: clamp(14px, 1.5vw, 18px);
+            letter-spacing: 0.3px;
+            font-weight: 500;
+            opacity: 0.9;
+            line-height: 1.2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .top-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            position: absolute;
+            right: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .topbar h1 {
+            margin: 0;
+            font-size: clamp(18px, 2.1vw, 26px);
+            letter-spacing: 0.4px;
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .scope-switch {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            border-radius: 10px;
+            padding: 5px 8px;
+            font-size: 12px;
+            color: #ecfeff;
+        }
+
+        .scope-switch select {
+            border: 1px solid rgba(255, 255, 255, 0.36);
+            background: rgba(2, 33, 46, 0.22);
+            color: #ecfeff;
+            border-radius: 6px;
+            padding: 5px 8px;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .scope-switch option {
+            color: #0f2f3d;
+            background: #ffffff;
+        }
+
+        .badge {
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .logout {
+            text-decoration: none;
+            background: #fff;
+            color: #0b4458;
+            border-radius: 8px;
+            padding: 7px 12px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .card {
+            background: var(--surface);
+      border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 10px 18px rgba(9, 38, 55, 0.05);
+            animation: fadeUp 0.45s ease both;
+        }
+
+        .card h3 {
+            margin: 0;
+            color: var(--soft);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .kpi-value {
+            margin-top: 8px;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .kpi-note {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #4f6c7d;
+        }
+
+        .main-grid {
+            margin-top: 16px;
+            display: grid;
+            grid-template-columns: 1.35fr 0.85fr;
+            gap: 14px;
+        }
+
+        .section-title {
+            margin: 0 0 12px;
+            font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mini-btn {
+            border: 1px solid #b8dbe8;
+            background: #f5fbff;
+            border-radius: 8px;
+            color: #1f5c77;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 5px 10px;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .action-btn {
+            border: 1px solid #cae3ef;
+            border-radius: 10px;
+            background: #f5fbff;
+            padding: 10px;
+            text-align: left;
+            color: #185068;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+
+        .action-btn:hover { transform: translateY(-1px); }
+
+        .status-box {
+            margin-top: 12px;
+            border: 1px solid #d9e8f1;
+            background: #f8fcff;
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 13px;
+            color: #31586f;
+            min-height: 42px;
+        }
+
+        .alert-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 9px;
+        }
+
+        .alert-item {
+            border: 1px solid #ead4cc;
+            background: #fff7f3;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            color: #74411e;
+        }
+
+        .health-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .health-item {
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            background: #fbfeff;
+        }
+
+        .tag {
+            font-size: 12px;
+            border-radius: 999px;
+            padding: 2px 8px;
+            color: #fff;
+        }
+
+        .tag-ok { background: var(--ok); }
+        .tag-warn { background: var(--warn); }
+        .tag-danger { background: var(--danger); }
+
+        .api-panel p {
+            margin: 8px 0;
+            color: #335a6e;
+        }
+
+        .api-json {
+            margin-top: 10px;
+            border-radius: 10px;
+            background: #f7fcff;
+            border: 1px solid #d6e8f2;
+            padding: 10px;
+            max-height: 220px;
+            overflow: auto;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            color: #19445b;
+        }
+
+        .analysis-overview {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+            margin: 8px 0 14px;
+        }
+
+        .overview-card {
+            border: 1px solid #dbe8f0;
+            border-radius: 12px;
+            background: linear-gradient(180deg, #fbfeff, #f4faff);
+            padding: 12px 14px;
+        }
+
+        .overview-card .label {
+            font-size: 12px;
+            color: #678192;
+        }
+
+        .overview-card .value {
+            margin-top: 8px;
+            font-size: 22px;
+            font-weight: 700;
+            color: #14485f;
+        }
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .analysis-panel {
+            border: 1px solid #dbe8f0;
+            border-radius: 12px;
+            background: #fbfdff;
+            padding: 12px;
+        }
+
+        .analysis-panel h3 {
+            margin: 0 0 10px;
+            font-size: 15px;
+            color: #164a62;
+        }
+
+        .panel-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .panel-meta {
+            font-size: 12px;
+            color: #6f8593;
+        }
+
+        .chart-shell {
+            border: 1px solid #d8e7f0;
+            border-radius: 12px;
+            background: linear-gradient(180deg, #ffffff, #f8fcff);
+            padding: 10px;
+        }
+
+        .chart-shell canvas {
+            width: 100%;
+            height: 280px;
+            display: block;
+        }
+
+        .chart-empty {
+            padding: 22px 12px;
+            border: 1px dashed #c7dbe6;
+            border-radius: 12px;
+            color: #6f8593;
+            text-align: center;
+            background: #fbfeff;
+            font-size: 13px;
+        }
+
+        .chart-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .metric-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0 0 10px;
+        }
+
+        .metric-chip {
+            border: 1px solid #c8dde9;
+            background: #f5fbff;
+            color: #1d5b77;
+            border-radius: 999px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .metric-chip.active {
+            background: #0e7490;
+            border-color: #0e7490;
+            color: #fff;
+        }
+
+        .metric-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0 0 10px;
+        }
+
+        .metric-legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #d1e3ec;
+            border-radius: 999px;
+            padding: 4px 8px;
+            font-size: 12px;
+            color: #34586f;
+            background: #f6fbff;
+        }
+
+        .metric-legend i {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .chart-tab {
+            border: 1px solid #c8dde9;
+            background: #f5fbff;
+            color: #1d5b77;
+            border-radius: 999px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .chart-tab.active {
+            background: #0e7490;
+            border-color: #0e7490;
+            color: #fff;
+        }
+
+        .module-list {
+            display: grid;
+            gap: 8px;
+        }
+
+        .module-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid #dbe8f0;
+            border-radius: 10px;
+            padding: 10px 12px;
+            background: #ffffff;
+        }
+
+        .module-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .module-open {
+            border: 1px solid #bdd9e7;
+            background: #f4fbff;
+            color: #1e607d;
+            border-radius: 8px;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .module-item .module-title {
+            font-weight: 600;
+            color: #164a62;
+        }
+
+        .module-item .module-detail {
+            margin-top: 3px;
+            font-size: 12px;
+            color: #6f8593;
+        }
+
+        .module-badge {
+            font-size: 12px;
+            border-radius: 999px;
+            padding: 3px 9px;
+            color: #fff;
+            white-space: nowrap;
+        }
+
+        .badge-completed { background: var(--ok); }
+        .badge-partial { background: var(--warn); }
+        .badge-skipped { background: var(--danger); }
+
+        .table-wrap {
+            overflow: auto;
+            border: 1px solid #dbe8f0;
+            border-radius: 10px;
+            background: #ffffff;
+        }
+
+        .analysis-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .analysis-table th,
+        .analysis-table td {
+            border-bottom: 1px solid #e7eff5;
+            padding: 8px 10px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .analysis-table th {
+            background: #f5fbff;
+            color: #486575;
+            font-weight: 600;
+        }
+
+        .analysis-grid-bottom {
+            grid-template-columns: 1fr 1fr;
+            margin-top: 12px;
+        }
+
+        .analysis-note {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #6f8593;
+        }
+
+        .yearbook-counts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0 0 10px;
+        }
+
+        .yearbook-counts span {
+            border: 1px solid #d1e3ec;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 12px;
+            color: #34586f;
+            background: #f6fbff;
+        }
+
+        .module-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(9, 35, 49, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+
+        .module-modal.show {
+            display: flex;
+        }
+
+        .module-modal-card {
+            width: min(960px, 100%);
+            max-height: 86vh;
+            overflow: auto;
+            border-radius: 14px;
+            border: 1px solid #cfe3ef;
+            background: #ffffff;
+            box-shadow: 0 14px 28px rgba(8, 38, 54, 0.2);
+            padding: 14px;
+        }
+
+        .module-modal-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        .module-modal-close {
+            border: 1px solid #c9dce8;
+            background: #f7fbff;
+            border-radius: 8px;
+            color: #2a5f79;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .section-subtitle {
+            margin: 4px 0 0;
+            font-size: 12px;
+            color: #6f8593;
+        }
+
+        .scope-note {
+            margin: 6px 0 0;
+            font-size: 12px;
+            color: #4d6878;
+        }
+
+        .news-slider {
+            margin: 8px 0 10px;
+            padding: 10px;
+            border: 1px solid #dbe8f0;
+            border-radius: 10px;
+            background: linear-gradient(180deg, #fbfeff, #f6fbff);
+        }
+
+        .news-slider-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: #4d6878;
+            margin-bottom: 8px;
+        }
+
+        .news-slider input[type="range"] {
+            width: 100%;
+            accent-color: var(--pri);
+        }
+
+        .news-slider-note {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #6f8593;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 上传模态框样式 */
+        .upload-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(9, 35, 49, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            padding: 16px;
+        }
+
+        .upload-modal.show {
+            display: flex;
+        }
+
+        .upload-modal-card {
+            width: min(700px, 100%);
+            max-height: 80vh;
+            overflow: auto;
+            border-radius: 14px;
+            border: 1px solid #cfe3ef;
+            background: #ffffff;
+            box-shadow: 0 14px 28px rgba(8, 38, 54, 0.2);
+            padding: 20px;
+        }
+
+        .upload-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            gap: 10px;
+            border-bottom: 1px solid #dbe8f0;
+            padding-bottom: 12px;
+        }
+
+        .upload-modal-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #13455d;
+            margin: 0;
+        }
+
+        .upload-close-btn {
+            border: 1px solid #c9dce8;
+            background: #f7fbff;
+            border-radius: 8px;
+            color: #2a5f79;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 12px;
+            min-width: 60px;
+        }
+
+        .upload-close-btn:hover {
+            background: #eff7fc;
+        }
+
+        .upload-area {
+            border: 2px dashed #b8dbe8;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 16px;
+            transition: all 0.3s;
+            background: #f8fcff;
+        }
+
+        .upload-area:hover {
+            background: #f0f7ff;
+            border-color: #0e7490;
+        }
+
+        .upload-area svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 10px;
+        }
+
+        .upload-area p {
+            color: #606266;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+
+        .upload-area .hint {
+            font-size: 12px;
+            color: #909399;
+        }
+
+        #uploadFileInput {
+            display: none;
+        }
+
+        .upload-progress {
+            width: 100%;
+            height: 6px;
+            background: #e4e7ed;
+            border-radius: 4px;
+            margin: 16px 0;
+            overflow: hidden;
+            display: none;
+        }
+
+        .upload-progress-bar {
+            height: 100%;
+            background: #67c23a;
+            width: 0%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .upload-alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: none;
+            font-size: 13px;
+        }
+
+        .upload-alert.show {
+            display: block;
+        }
+
+        .upload-alert-success {
+            background: #f0f9eb;
+            color: #67c23a;
+            border: 1px solid #e1f3d8;
+        }
+
+        .upload-alert-error {
+            background: #fef0f0;
+            color: #f56c6c;
+            border: 1px solid #fde2e2;
+        }
+
+        .upload-preview {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .upload-preview-header {
+            font-size: 14px;
+            font-weight: 600;
+            color: #164a62;
+            margin-bottom: 12px;
+        }
+
+        .upload-table-wrapper {
+            overflow-x: auto;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #dbe8f0;
+            border-radius: 8px;
+        }
+
+        .upload-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            background: #ffffff;
+        }
+
+        .upload-table th,
+        .upload-table td {
+            border-bottom: 1px solid #e7eff5;
+            padding: 10px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .upload-table th {
+            background: #f5fbff;
+            color: #486575;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .upload-actions {
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .upload-btn {
+            border: 1px solid #bdd9e7;
+            background: #f4fbff;
+            border-radius: 8px;
+            color: #1e607d;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .upload-btn:hover {
+            background: #eff8fd;
+        }
+
+        .upload-btn.primary {
+            background: #0e7490;
+            color: #ffffff;
+            border-color: #0e7490;
+        }
+
+        .upload-btn.primary:hover {
+            background: #1b8ba4;
+        }
+
+        .upload-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 1024px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 680px) {
+            .kpi-grid,
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+            .analysis-overview,
+            .analysis-grid,
+            .analysis-grid-bottom {
+                grid-template-columns: 1fr;
+            }
+            .health-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* ============ 左侧索引栏样式 ============ */
+        .sidebar-nav {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 240px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(14, 116, 144, 0.15);
+            box-shadow: 2px 0 12px rgba(9, 38, 55, 0.08);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 20px 16px 16px;
+            border-bottom: 1px solid rgba(14, 116, 144, 0.1);
+            margin-bottom: 8px;
+        }
+
+        .sidebar-logo {
+            font-size: 28px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0e7490;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 0 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #4d6878;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            background: transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(14, 116, 144, 0.08);
+            color: #0e7490;
+            border-color: rgba(14, 116, 144, 0.2);
+            transform: translateX(4px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, #0e7490, #1b8ba4);
+            color: white;
+            border-color: #0e7490;
+            box-shadow: 0 4px 12px rgba(14, 116, 144, 0.25);
+        }
+
+        .nav-item.active .nav-icon {
+            color: white;
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+            color: #6f8593;
+            transition: color 0.2s ease;
+        }
+
+        .nav-text {
+            font-size: 14px;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid rgba(14, 116, 144, 0.1);
+            margin-top: 8px;
+        }
+
+        .nav-hint {
+            font-size: 12px;
+            color: #6f8593;
+            text-align: center;
+            padding: 8px;
+            background: rgba(14, 116, 144, 0.05);
+            border-radius: 8px;
+            border: 1px dashed rgba(14, 116, 144, 0.2);
+        }
+
+        /* 调整主要内容区域，为侧边栏留出空间 */
+        body {
+            padding-left: 240px;
+        }
+
+        .topbar {
+            width: 100%;
+            padding: 16px 24px;
+            background: linear-gradient(90deg, #07364a, #0e5f76);
+            color: #ecfeff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 响应式设计：小屏幕隐藏侧边栏 */
+        @media (max-width: 1024px) {
+            .sidebar-nav {
+                transform: translateX(-100%);
+            }
+            
+            body {
+                padding-left: 0;
+            }
+            
+            .topbar {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .container {
+                margin-left: 0;
+                width: calc(100% - 36px);
+            }
+            
+            /* 添加汉堡菜单按钮 */
+            .topbar::before {
+                content: "☰";
+                font-size: 20px;
+                cursor: pointer;
+                margin-right: 12px;
+                color: #ecfeff;
+            }
+            
+            .sidebar-nav.show {
+                transform: translateX(0);
+            }
+        }
+
+        /* 平滑滚动 */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* 单页应用导航样式 */
+        section[data-section] {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        section[data-section].hidden {
+            display: none;
+        }
+        
+        section[data-section].active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* 显示全部按钮 */
+        .show-all-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 999;
+            background: #0e7490;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(14, 116, 144, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .show-all-btn:hover {
+            background: #1b8ba4;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(14, 116, 144, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <!-- 左侧索引栏 -->
+    <nav class="sidebar-nav">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">📊</div>
+            <div class="sidebar-title">导航索引</div>
+        </div>
+        <div class="sidebar-menu">
+            <a href="#core-overview" class="nav-item active" data-section="overview">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">核心概览</span>
+            </a>
+            <a href="#region-news" class="nav-item" data-section="news">
+                <span class="nav-icon">📰</span>
+                <span class="nav-text">区域新闻</span>
+            </a>
+            <a href="#statistical-yearbook" class="nav-item" data-section="yearbook">
+                <span class="nav-icon">📋</span>
+                <span class="nav-text">统计年报</span>
+            </a>
+            <a href="#structured-metrics" class="nav-item" data-section="metrics">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">结构化指标</span>
+            </a>
+            <a href="#analysis-modules" class="nav-item" data-section="analysis">
+                <span class="nav-icon">✅</span>
+                <span class="nav-text">分析模块</span>
+            </a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="nav-hint">点击快速导航</div>
+        </div>
+    </nav>
+
+    <header class="topbar">
+        <div class="title-container">
+            <div class="main-title">🏥 健康大数据应用创新研发中心统计分析决策系统</div>
+            <div class="sub-title">
+                <label class="scope-switch" for="scopeSelector">
+                    <span>数据范围</span>
+                    <select id="scopeSelector">
+                        <option value="guangxi">省级卫健委（广西）</option>
+                        <option value="national">国家卫健委</option>
+                        <option value="all">全部来源</option>
+                    </select>
+                </label>
+                <span class="badge">管理员</span>
+                <span id="scopeBadge" class="badge">当前: 省级卫健委（广西）</span>
+                <span class="badge">运行状态: 在线</span>
+                <a class="logout" href="/logout">退出登录</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 锚点：核心概览 -->
+        <div id="core-overview" style="position: relative; top: -80px;"></div>
+        
+        <!-- KPI指标 -->
+        <section class="kpi-grid" data-section="overview">
+            <article class="card">
+                <h3>平台机构数</h3>
+                <div class="kpi-value" id="kpiInst">--</div>
+                <div class="kpi-note">医疗卫生机构总数</div>
+            </article>
+            <article class="card">
+                <h3>指标总数</h3>
+                <div class="kpi-value" id="kpiBatch">--</div>
+                <div class="kpi-note">已采集健康指标条目</div>
+            </article>
+            <article class="card">
+                <h3>重点风险事件</h3>
+                <div class="kpi-value" id="kpiRisk">--</div>
+                <div class="kpi-note">数据质量异常告警</div>
+            </article>
+            <article class="card" style="opacity: 0.7;">
+                <h3>📊 数据来源分布</h3>
+                <div class="kpi-value" id="kpiSource">--</div>
+                <div class="kpi-note">广西 + 国家卫健委</div>
+            </article>
+        </section>
+
+        <!-- 快捷操作、实时告警、系统健康、API统计 -->
+        <section class="main-grid" data-section="overview">
+            <article class="card">
+                <h2 class="section-title">管理快捷操作</h2>
+                <div class="quick-actions">
+                    <button class="action-btn" data-action="weekly_report">📊 生成周报</button>
+                    <button class="action-btn" data-action="configure_alert">⚙️ 配置预警规则</button>
+                    <button class="action-btn" data-action="export_stats">📁 导出机构统计</button>
+                    <button class="action-btn" id="openUploadModal" style="cursor:pointer;">📤 文档上传</button>
+                    <button class="action-btn" data-action="clean_data">🧹 数据清理</button>
+                    <button class="action-btn" data-action="backup_data">💾 数据备份</button>
+                    <button class="action-btn" data-action="user_management">👥 用户管理</button>
+                    <button class="action-btn" data-action="system_logs">📋 系统日志</button>
+                </div>
+                <div id="actionStatus" class="status-box">点击任一操作按钮开始执行任务。</div>
+
+                <h2 class="section-title" style="margin-top: 18px;">
+                    实时告警流
+                    <button id="refreshAlerts" class="mini-btn">刷新</button>
+                </h2>
+                <ul id="alertList" class="alert-list"></ul>
+            </article>
+
+            <aside class="card">
+                <h2 class="section-title">系统健康状态</h2>
+                <ul id="healthList" class="health-list">
+                    <li class="health-item"><span>接口状态</span><span class="tag tag-warn" id="healthApi">检测中</span></li>
+                    <li class="health-item"><span>实时告警数量</span><span class="tag tag-warn" id="healthAlerts">--</span></li>
+                    <li class="health-item"><span>核心数据完整性</span><span class="tag tag-warn" id="healthIntegrity">检测中</span></li>
+                </ul>
+
+                <h2 class="section-title" style="margin-top: 18px;">
+                    API 统计快照
+                    <button id="refreshApi" class="mini-btn">刷新</button>
+                </h2>
+                <div class="api-panel">
+                    <p>从 /api/health-stats 拉取实时结果。</p>
+                    <div class="scope-note" id="apiScopeNote">当前范围: 省级卫健委（广西）</div>
+                    <div id="apiData" class="api-json">正在加载...</div>
+                </div>
+            </aside>
+        </section>
+
+        <section class="main-grid" style="margin-top: 20px;" data-section="news">
+            <article class="card">
+                <!-- 锚点：区域新闻 -->
+                <div id="region-news" style="position: relative; top: -80px;"></div>
+                <h2 class="section-title">
+                    区域新闻采集
+                    <button id="refreshRegionNews" class="mini-btn">刷新</button>
+                </h2>
+                <div id="regionNewsMeta" class="scope-note">当前范围: 省级卫健委（广西）</div>
+                <div class="year-selector-container" style="margin: 12px 0 16px;">
+                    <label class="scope-switch" for="yearSelector" style="background: rgba(14, 116, 144, 0.08); border: 1px solid rgba(14, 116, 144, 0.2); color: #0f2f3d;">
+                        <span>年份筛选</span>
+                        <select id="yearSelector">
+                            <option value="">不限年份</option>
+                            <!-- 年份选项将通过JavaScript动态添加 -->
+                        </select>
+                    </label>
+                </div>
+                <ul id="regionNewsList" class="alert-list"></ul>
+            </article>
+            <article class="card">
+                <h2 class="section-title">范围说明</h2>
+                <div class="analysis-note">切换顶部“数据范围”后，新闻、结构化指标、分析模块会统一按同一来源重新加载，避免不同地区数据混杂。</div>
+                <div class="analysis-note">省级范围当前对应广西卫健委数据；国家范围对应国家卫健委数据。</div>
+            </article>
+        </section>
+
+        <section style="margin-top: 20px;" data-section="yearbook">
+            <article class="card" style="width: 100%;">
+                <h2 class="section-title">
+                    🗂 统计年报（新增 tjnb）
+                    <button id="refreshYearbook" class="mini-btn">刷新</button>
+                </h2>
+                <div id="yearbookMeta" class="analysis-note">加载中...</div>
+                <div id="yearbookCounts" class="yearbook-counts"></div>
+                <ul id="yearbookList" class="alert-list"></ul>
+            </article>
+        </section>
+
+        <section style="margin-top: 20px;" data-section="metrics">
+            <article class="card" style="width: 100%;">
+                <h2 class="section-title">
+                    📊 真实结构化指标年度汇总
+                    <button id="refreshMetrics" class="mini-btn">刷新</button>
+                </h2>
+                <div id="metricsContainer" style="overflow-x: auto;">
+                    <div id="metricsData">加载中...</div>
+                </div>
+            </article>
+        </section>
+
+        <section style="margin-top: 20px;" data-section="analysis">
+            <article class="card" style="width: 100%;">
+                <div class="section-title">
+                    <div>
+                        <div style="font-size:16px; font-weight:700;">✅ 需求完成度与可分析数据</div>
+                        <div class="section-subtitle">基于现有表数据自动渲染，缺少数据支撑的模块会直接跳过。</div>
+                    </div>
+                    <button id="refreshAnalysis" class="mini-btn">刷新</button>
+                </div>
+                <div id="analysisOverview" class="analysis-overview">加载中...</div>
+                <div class="analysis-grid">
+                    <section class="analysis-panel">
+                        <h3>模块完成度</h3>
+                        <div id="moduleStatusData" class="module-list">加载中...</div>
+                    </section>
+
+                    <section class="analysis-panel">
+                        <div class="panel-head">
+                            <h3>人口分布</h3>
+                            <span id="populationMeta" class="panel-meta">加载中...</span>
+                        </div>
+                        <div class="chart-shell">
+                            <canvas id="populationChart" width="820" height="280"></canvas>
+                        </div>
+                        <div id="populationChartEmpty" class="chart-empty" style="display:none;"></div>
+                    </section>
+
+                    <section class="analysis-panel">
+                        <div class="panel-head">
+                            <h3>OCR 指标趋势</h3>
+                            <span id="metricMeta" class="panel-meta">加载中...</span>
+                        </div>
+                        <div id="metricTabs" class="chart-tabs"></div>
+                        <div id="metricSelector" class="metric-selector"></div>
+                        <div class="chart-shell">
+                            <canvas id="metricChart" width="820" height="280"></canvas>
+                        </div>
+                        <div id="metricChartEmpty" class="chart-empty" style="display:none;"></div>
+                    </section>
+
+                    <section class="analysis-panel">
+                        <h3>人口数据摘要</h3>
+                        <div id="populationSummaryTable" class="table-wrap">加载中...</div>
+                    </section>
+
+                    <section class="analysis-panel">
+                        <h3>OCR 结构化指标预览</h3>
+                        <div id="metricPreviewTable" class="table-wrap">加载中...</div>
+                    </section>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <div id="moduleModal" class="module-modal">
+        <div class="module-modal-card">
+            <div class="module-modal-head">
+                <div>
+                    <div id="moduleModalTitle" style="font-size:16px; font-weight:700; color:#13455d;">模块图表</div>
+                    <div id="moduleModalSub" class="section-subtitle">请选择指标查看趋势</div>
+                </div>
+                <button id="moduleModalClose" class="module-modal-close">关闭</button>
+            </div>
+            <div id="moduleModalMetricSelector" class="metric-selector"></div>
+            <div class="chart-shell">
+                <canvas id="moduleModalChart" width="900" height="320"></canvas>
+            </div>
+            <div id="moduleModalNote" class="analysis-note"></div>
+        </div>
+    </div>
+
+    <!-- 文档上传模态框 -->
+    <div id="uploadModal" class="upload-modal">
+        <div class="upload-modal-card">
+            <div class="upload-modal-header">
+                <h2 class="upload-modal-title">📤 文档上传</h2>
+                <button id="uploadCloseBtn" class="upload-close-btn">关闭</button>
+            </div>
+            <div id="uploadAlert" class="upload-alert"></div>
+            
+            <div id="uploadArea" class="upload-area" onclick="document.getElementById('uploadFileInput').click()">
+                <svg viewBox="0 0 1024 1024" fill="#0e7490"><path d="M512 256l144.8 144.8-36.2 36.2-83-83v350h-51.2v-350l-83 83-36.2-36.2L512 256zM853.4 853.4H170.6V170.6h298.6v-51.2H170.6c-28.2 0-51.2 23-51.2 51.2v682.8c0 28.2 23 51.2 51.2 51.2h682.8c28.2 0 51.2-23 51.2-51.2V512h-51.2v341.4z"/></svg>
+                <p>点击或拖拽文件到此处上传</p>
+                <p class="hint">支持 Excel, PDF, Word, TXT 格式</p>
+                <input type="file" id="uploadFileInput" accept=".xlsx,.xls,.pdf,.docx,.txt" />
+            </div>
+            
+            <div class="upload-progress">
+                <div class="upload-progress-bar"></div>
+            </div>
+            
+            <div class="upload-preview">
+                <div class="upload-preview-header">
+                    解析结果预览
+                    <span style="font-size: 12px; color: #6f8593;">（识别表: <span id="uploadTargetTable">--</span>）</span>
+                </div>
+                <div class="upload-table-wrapper">
+                    <table id="uploadPreviewTable" class="upload-table">
+                        <thead><tr></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="upload-actions">
+                    <button id="uploadCancelBtn" class="upload-btn">取消</button>
+                    <button id="uploadConfirmBtn" class="upload-btn primary">确认入库</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新闻详情模态框 -->
+    <div id="newsDetailModal" class="upload-modal" style="display: none;">
+        <div class="upload-modal-card" style="max-width: 800px;">
+            <div class="upload-modal-header">
+                <h2 class="upload-modal-title">📰 新闻详情</h2>
+                <button id="newsDetailCloseBtn" class="upload-close-btn">关闭</button>
+            </div>
+            <div class="news-detail-content" style="padding: 20px; max-height: 70vh; overflow-y: auto;">
+                <h3 id="newsDetailTitle" style="margin-top: 0; color: #0e7490;"></h3>
+                <div style="display: flex; gap: 20px; margin-bottom: 20px; font-size: 14px; color: #666;">
+                    <div><strong>来源:</strong> <span id="newsDetailSource"></span></div>
+                    <div><strong>发布日期:</strong> <span id="newsDetailDate"></span></div>
+                    <div><strong>发布年份:</strong> <span id="newsDetailYear"></span></div>
+                </div>
+                <div id="newsDetailContent" style="line-height: 1.6; color: #333;">
+                    <p>新闻内容加载中...</p>
+                </div>
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+                    <a id="newsDetailLink" href="#" target="_blank" style="color: #0e7490; text-decoration: none;">查看原文链接</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ANALYSIS_GROUPS = {
+            personnel: {
+                label: '医疗人员',
+                metrics: ['doctor_count', 'nurse_count'],
+            },
+            bed: {
+                label: '床位指标',
+                metrics: ['bed_count', 'bed_usage_rate'],
+            },
+            service: {
+                label: '医疗服务',
+                metrics: ['outpatient_visits', 'discharge_count', 'avg_stay_days'],
+            },
+            cost: {
+                label: '医疗费用',
+                metrics: ['outpatient_cost', 'discharge_cost'],
+            },
+        };
+
+        const ANALYSIS_COLORS = ['#0e7490', '#16a34a', '#ea580c', '#2563eb', '#7c3aed'];
+        const METRIC_LABELS = {
+            doctor_count: '执业(助理)医师数',
+            nurse_count: '注册护士数',
+            bed_count: '实有床位数',
+            bed_usage_rate: '病床使用率',
+            outpatient_visits: '总诊疗人次数',
+            discharge_count: '出院人数',
+            avg_stay_days: '出院者平均住院日',
+            outpatient_cost: '门诊病人次均医药费用',
+            discharge_cost: '出院病人人均医药费用',
+        };
+
+        const MODULE_VIEW_MAP = {
+            '人口信息统计分析': { key: 'population', metrics: [] },
+            '医疗卫生人员统计分析': { key: 'personnel', metrics: ['doctor_count', 'nurse_count'] },
+            '医疗卫生床位统计分析': { key: 'bed', metrics: ['bed_count', 'bed_usage_rate'] },
+            '医疗服务统计分析': { key: 'service', metrics: ['outpatient_visits', 'discharge_count', 'avg_stay_days'] },
+            '医疗费用统计分析': { key: 'cost', metrics: ['outpatient_cost', 'discharge_cost'] },
+        };
+
+        const analysisState = {
+            modules: [],
+            meta: null,
+            populationRows: [],
+            metricRows: [],
+            scope: 'guangxi',
+            scopeLabel: '省级卫健委（广西）',
+            actionBusy: false,
+            activeGroup: 'personnel',
+            selectedMetricByGroup: {
+                personnel: 'doctor_count',
+                bed: 'bed_count',
+                service: 'outpatient_visits',
+                cost: 'outpatient_cost',
+            },
+            modalModuleKey: null,
+            modalMetricKey: null,
+            newsYear: 0,
+            newsYearMin: 0,
+            newsYearMax: 0,
+            newsYearTimer: null,
+        };
+
+        let alertsTimer = null;
+        let alertsLoading = false;
+        let latestAlertCount = 0;
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"]/g, char => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+            })[char]);
+        }
+
+        function formatNumber(value) {
+            if (value === null || value === undefined || value === '') {
+                return '--';
+            }
+            const numeric = Number(value);
+            if (Number.isFinite(numeric)) {
+                return numeric.toLocaleString('zh-CN', { maximumFractionDigits: 2 });
+            }
+            return String(value);
+        }
+
+        function statusBadgeClass(status) {
+            if (status === 'completed') {
+                return 'module-badge badge-completed';
+            }
+            if (status === 'partial') {
+                return 'module-badge badge-partial';
+            }
+            return 'module-badge badge-skipped';
+        }
+
+        function drawEmpty(canvas, text) {
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = '#f8fcff';
+            ctx.fillRect(0, 0, width, height);
+            ctx.fillStyle = '#6f8593';
+            ctx.font = '14px Microsoft YaHei, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(text, width / 2, height / 2);
+        }
+
+        function drawHorizontalBarChart(canvas, rows) {
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, width, height);
+
+            if (!rows.length) {
+                drawEmpty(canvas, '暂无人口分布数据');
+                return;
+            }
+
+            const margin = { top: 18, right: 20, bottom: 24, left: 140 };
+            const chartWidth = width - margin.left - margin.right;
+            const chartHeight = height - margin.top - margin.bottom;
+            const barHeight = Math.max(18, Math.floor(chartHeight / rows.length) - 8);
+            const maxValue = Math.max(...rows.map(row => Number(row.person_count) || 0), 1);
+
+            ctx.font = '12px Microsoft YaHei, sans-serif';
+            rows.forEach((row, index) => {
+                const y = margin.top + index * (barHeight + 8);
+                const value = Number(row.person_count) || 0;
+                const barWidth = (value / maxValue) * chartWidth;
+
+                ctx.fillStyle = '#5b7380';
+                ctx.textAlign = 'right';
+                ctx.fillText(row.district || '未知', margin.left - 8, y + barHeight / 2 + 4);
+
+                ctx.fillStyle = '#e5eff5';
+                ctx.fillRect(margin.left, y, chartWidth, barHeight);
+
+                ctx.fillStyle = index % 2 === 0 ? '#0e7490' : '#14b8a6';
+                ctx.fillRect(margin.left, y, barWidth, barHeight);
+
+                ctx.fillStyle = '#15394a';
+                ctx.textAlign = 'left';
+                ctx.fillText(formatNumber(value), margin.left + barWidth + 8, y + barHeight / 2 + 4);
+            });
+        }
+
+        function buildMetricMatrix(groupKey) {
+            const group = ANALYSIS_GROUPS[groupKey];
+            const yearMap = new Map();
+
+            analysisState.metricRows.forEach(row => {
+                if (!group.metrics.includes(row.metric_key)) {
+                    return;
+                }
+
+                const year = Number(row.year);
+                if (!Number.isFinite(year)) {
+                    return;
+                }
+
+                if (!yearMap.has(year)) {
+                    yearMap.set(year, {});
+                }
+
+                yearMap.get(year)[row.metric_key] = Number(row.avg_value);
+            });
+
+            const years = Array.from(yearMap.keys()).sort((a, b) => a - b);
+            const series = group.metrics
+                .map(metricKey => ({
+                    key: metricKey,
+                    values: years.map(year => yearMap.get(year)[metricKey]).filter(value => Number.isFinite(value)),
+                }))
+                .filter(item => item.values.length > 0);
+
+            return { years, series, yearMap };
+        }
+
+        function buildMetricSeries(metricKey) {
+            const points = analysisState.metricRows
+                .filter(row => row.metric_key === metricKey)
+                .map(row => ({
+                    year: Number(row.year),
+                    value: Number(row.avg_value),
+                    sampleCount: Number(row.sample_count || 0),
+                }))
+                .filter(item => Number.isFinite(item.year) && Number.isFinite(item.value))
+                .sort((a, b) => a.year - b.year);
+
+            return points;
+        }
+
+        function drawSingleMetricLineChart(canvas, points, metricLabel) {
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, width, height);
+
+            if (!points.length) {
+                drawEmpty(canvas, '暂无 OCR 指标趋势数据');
+                return;
+            }
+
+            const margin = { top: 24, right: 24, bottom: 36, left: 52 };
+            const chartWidth = width - margin.left - margin.right;
+            const chartHeight = height - margin.top - margin.bottom;
+            const values = points.map(item => item.value);
+            const minValue = Math.min(...values);
+            const maxValue = Math.max(...values);
+            const valueRange = maxValue - minValue || 1;
+            const stepX = chartWidth / Math.max(points.length - 1, 1);
+
+            ctx.strokeStyle = '#d7e6ee';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = margin.top + (chartHeight / 4) * i;
+                ctx.beginPath();
+                ctx.moveTo(margin.left, y);
+                ctx.lineTo(width - margin.right, y);
+                ctx.stroke();
+            }
+
+            ctx.beginPath();
+            points.forEach((point, index) => {
+                const x = margin.left + index * stepX;
+                const y = margin.top + chartHeight - ((point.value - minValue) / valueRange) * chartHeight;
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.strokeStyle = '#0e7490';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            points.forEach((point, index) => {
+                const x = margin.left + index * stepX;
+                const y = margin.top + chartHeight - ((point.value - minValue) / valueRange) * chartHeight;
+                ctx.beginPath();
+                ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+                ctx.fillStyle = '#0e7490';
+                ctx.fill();
+            });
+
+            ctx.fillStyle = '#4d6878';
+            ctx.font = '12px Microsoft YaHei, sans-serif';
+            ctx.textAlign = 'center';
+            points.forEach((point, index) => {
+                const x = margin.left + index * stepX;
+                ctx.fillText(String(point.year), x, height - 12);
+            });
+
+            ctx.textAlign = 'right';
+            const scaleValues = [maxValue, minValue + valueRange * 0.75, minValue + valueRange * 0.5, minValue + valueRange * 0.25, minValue];
+            scaleValues.forEach((value, index) => {
+                const y = margin.top + (chartHeight / 4) * index + 4;
+                ctx.fillText(formatNumber(value), margin.left - 8, y);
+            });
+
+            ctx.textAlign = 'left';
+
+            ctx.fillStyle = '#3f6378';
+            ctx.font = '12px Microsoft YaHei, sans-serif';
+            ctx.fillText(metricLabel, margin.left, margin.top - 8);
+        }
+
+        function renderAnalysisOverview() {
+            const completed = analysisState.modules.filter(item => item.status === 'completed').length;
+            const partial = analysisState.modules.filter(item => item.status === 'partial').length;
+            const skipped = analysisState.modules.filter(item => item.status === 'skipped').length;
+            const populationRows = analysisState.populationRows.length;
+            const metricRows = analysisState.metricRows.length;
+
+            document.getElementById('analysisOverview').innerHTML = `
+                <article class="overview-card">
+                    <div class="label">已完成模块</div>
+                    <div class="value">${completed}</div>
+                </article>
+                <article class="overview-card">
+                    <div class="label">部分完成模块</div>
+                    <div class="value">${partial}</div>
+                </article>
+                <article class="overview-card">
+                    <div class="label">已跳过模块</div>
+                    <div class="value">${skipped}</div>
+                </article>
+                <article class="overview-card">
+                    <div class="label">分析数据行数</div>
+                    <div class="value">${populationRows + metricRows}</div>
+                </article>
+            `;
+            document.getElementById('scopeBadge').textContent = `当前: ${analysisState.scopeLabel}`;
+        }
+
+        function renderModuleStatus() {
+            const container = document.getElementById('moduleStatusData');
+            container.innerHTML = analysisState.modules.map(item => `
+                <div class="module-item">
+                    <div>
+                        <div class="module-title">${escapeHtml(item.module)}</div>
+                        <div class="module-detail">${escapeHtml(item.detail)}</div>
+                    </div>
+                    <div class="module-right">
+                        ${MODULE_VIEW_MAP[item.module] && item.status !== 'skipped' ? `<button class="module-open" data-module="${MODULE_VIEW_MAP[item.module].key}" data-title="${escapeHtml(item.module)}">查看图表</button>` : ''}
+                        <span class="${statusBadgeClass(item.status)}">${item.status === 'completed' ? '已完成' : item.status === 'partial' ? '部分完成' : '已跳过'}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            container.querySelectorAll('.module-open').forEach(btn => {
+                btn.addEventListener('click', () => openModuleModal(btn.dataset.module, btn.dataset.title));
+            });
+        }
+
+        function renderPopulationSection() {
+            const populationRows = [...analysisState.populationRows]
+                .filter(row => Number(row.person_count) > 0)
+                .sort((a, b) => Number(b.person_count) - Number(a.person_count));
+            const topRows = populationRows.slice(0, 8);
+            const canvas = document.getElementById('populationChart');
+            const empty = document.getElementById('populationChartEmpty');
+            const meta = document.getElementById('populationMeta');
+
+            if (!topRows.length) {
+                canvas.style.display = 'none';
+                empty.style.display = 'block';
+                empty.textContent = '人口数据不足，暂无法生成分布图。';
+            } else {
+                canvas.style.display = 'block';
+                empty.style.display = 'none';
+                drawHorizontalBarChart(canvas, topRows);
+            }
+
+            meta.textContent = topRows.length ? `展示前 ${topRows.length} 个区县` : '无可展示区县';
+
+            document.getElementById('populationSummaryTable').innerHTML = topRows.length
+                ? `
+                    <table class="analysis-table">
+                        <thead>
+                            <tr>
+                                <th>区县</th>
+                                <th>人口样本数</th>
+                                <th>平均健康评分</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${topRows.map(row => `
+                                <tr>
+                                    <td>${escapeHtml(row.district || '未知')}</td>
+                                    <td>${formatNumber(row.person_count)}</td>
+                                    <td>${formatNumber(row.avg_health_score)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <div class="analysis-note">当前人口数据来自 population_data 表，已按区县聚合后展示。</div>
+                `
+                : '<div class="analysis-note">人口数据不足，已自动跳过人口分析。</div>';
+        }
+
+        function renderMetricTabs() {
+            const tabs = document.getElementById('metricTabs');
+            tabs.innerHTML = Object.entries(ANALYSIS_GROUPS).map(([key, group]) => `
+                <button class="chart-tab ${analysisState.activeGroup === key ? 'active' : ''}" data-group="${key}">${group.label}</button>
+            `).join('');
+
+            tabs.querySelectorAll('[data-group]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    analysisState.activeGroup = btn.dataset.group;
+                    renderMetricTabs();
+                    renderMetricSection();
+                    renderMetricPreviewTable();
+                });
+            });
+        }
+
+        function renderMetricSection() {
+            const canvas = document.getElementById('metricChart');
+            const empty = document.getElementById('metricChartEmpty');
+            const meta = document.getElementById('metricMeta');
+            const selector = document.getElementById('metricSelector');
+            const group = ANALYSIS_GROUPS[analysisState.activeGroup];
+            const metricOptions = group.metrics.filter(metric => buildMetricSeries(metric).length > 0);
+            let metricKey = analysisState.selectedMetricByGroup[analysisState.activeGroup];
+            if (!metricOptions.includes(metricKey)) {
+                metricKey = metricOptions[0] || group.metrics[0];
+                analysisState.selectedMetricByGroup[analysisState.activeGroup] = metricKey;
+            }
+
+            selector.innerHTML = group.metrics.map(metric => `
+                <button class="metric-chip ${metric === metricKey ? 'active' : ''}" data-metric="${metric}">${escapeHtml(METRIC_LABELS[metric] || metric)}</button>
+            `).join('');
+
+            selector.querySelectorAll('[data-metric]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    analysisState.selectedMetricByGroup[analysisState.activeGroup] = btn.dataset.metric;
+                    renderMetricSection();
+                });
+            });
+
+            const points = buildMetricSeries(metricKey);
+
+            if (!points.length) {
+                canvas.style.display = 'none';
+                empty.style.display = 'block';
+                empty.textContent = '该指标组暂无有效年份数据。';
+                meta.textContent = `${group.label} · 0 个年份`;
+                drawEmpty(canvas, '暂无 OCR 指标趋势数据');
+                return;
+            }
+
+            canvas.style.display = 'block';
+            empty.style.display = 'none';
+            meta.textContent = `${group.label} · ${METRIC_LABELS[metricKey] || metricKey} · ${points.length} 个年份点`;
+            drawSingleMetricLineChart(canvas, points, METRIC_LABELS[metricKey] || metricKey);
+        }
+
+        function closeModuleModal() {
+            document.getElementById('moduleModal').classList.remove('show');
+        }
+
+        function renderModuleModalMetricSelector(moduleKey, metricKey) {
+            const selector = document.getElementById('moduleModalMetricSelector');
+            const metrics = Object.values(MODULE_VIEW_MAP).find(item => item.key === moduleKey)?.metrics || [];
+            selector.innerHTML = metrics.map(metric => `
+                <button class="metric-chip ${metric === metricKey ? 'active' : ''}" data-modal-metric="${metric}">${escapeHtml(METRIC_LABELS[metric] || metric)}</button>
+            `).join('');
+
+            selector.querySelectorAll('[data-modal-metric]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    analysisState.modalMetricKey = btn.dataset.modalMetric;
+                    openModuleModal(moduleKey, document.getElementById('moduleModalTitle').textContent);
+                });
+            });
+        }
+
+        function openModuleModal(moduleKey, moduleTitle) {
+            const modal = document.getElementById('moduleModal');
+            const title = document.getElementById('moduleModalTitle');
+            const sub = document.getElementById('moduleModalSub');
+            const note = document.getElementById('moduleModalNote');
+            const selector = document.getElementById('moduleModalMetricSelector');
+            const canvas = document.getElementById('moduleModalChart');
+
+            analysisState.modalModuleKey = moduleKey;
+            title.textContent = moduleTitle || '模块图表';
+
+            if (moduleKey === 'population') {
+                selector.innerHTML = '';
+                const topRows = [...analysisState.populationRows]
+                    .filter(row => Number(row.person_count) > 0)
+                    .sort((a, b) => Number(b.person_count) - Number(a.person_count))
+                    .slice(0, 10);
+
+                drawHorizontalBarChart(canvas, topRows);
+                sub.textContent = '人口分布（按区县）';
+                note.textContent = topRows.length ? `当前展示前 ${topRows.length} 个区县。` : '当前无可用人口数据。';
+            } else {
+                const config = Object.values(MODULE_VIEW_MAP).find(item => item.key === moduleKey);
+                const metrics = (config?.metrics || []).filter(metric => buildMetricSeries(metric).length > 0);
+                let metricKey = analysisState.modalMetricKey;
+                if (!metrics.includes(metricKey)) {
+                    metricKey = metrics[0] || (config?.metrics || [])[0];
+                    analysisState.modalMetricKey = metricKey;
+                }
+
+                renderModuleModalMetricSelector(moduleKey, metricKey);
+                const points = buildMetricSeries(metricKey);
+                drawSingleMetricLineChart(canvas, points, METRIC_LABELS[metricKey] || metricKey);
+                sub.textContent = `${METRIC_LABELS[metricKey] || metricKey} 趋势`;
+                note.textContent = points.length ? `年度点位 ${points.length} 个，来源为结构化 OCR 指标。` : '该模块暂无有效数据。';
+            }
+
+            modal.classList.add('show');
+        }
+
+        function renderMetricPreviewTable() {
+            const rows = [...analysisState.metricRows]
+                .filter(row => Number.isFinite(Number(row.year)) || row.year)
+                .sort((a, b) => Number(b.year) - Number(a.year) || String(a.metric_key).localeCompare(String(b.metric_key)))
+                .slice(0, 24);
+
+            document.getElementById('metricPreviewTable').innerHTML = rows.length
+                ? `
+                    <table class="analysis-table">
+                        <thead>
+                            <tr>
+                                <th>年份</th>
+                                <th>指标</th>
+                                <th>均值</th>
+                                <th>样本数</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows.map(row => `
+                                <tr>
+                                    <td>${escapeHtml(row.year || '--')}</td>
+                                    <td>${escapeHtml(METRIC_LABELS[row.metric_key] || row.metric_key || '--')}</td>
+                                    <td>${formatNumber(row.avg_value)}</td>
+                                    <td>${formatNumber(row.sample_count)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <div class="analysis-note">仅展示前 24 条，完整结果可通过接口继续获取。</div>
+                `
+                : '<div class="analysis-note">结构化指标不足，已自动跳过人员/床位/服务/费用分析。</div>';
+        }
+
+        async function runAdminAction(action) {
+            const statusEl = document.getElementById('actionStatus');
+            if (analysisState.actionBusy) {
+                statusEl.textContent = '当前有任务在执行，请稍候。';
+                return;
+            }
+
+            analysisState.actionBusy = true;
+            const actionButtons = document.querySelectorAll('[data-action]');
+            actionButtons.forEach(btn => {
+                btn.disabled = true;
+                btn.style.opacity = '0.65';
+            });
+
+            statusEl.textContent = '任务执行中...';
+            try {
+                const resp = await fetch('/admin/api/action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action })
+                });
+                const data = await resp.json();
+                if (!resp.ok) {
+                    statusEl.textContent = data.error || '操作失败';
+                    return;
+                }
+                statusEl.textContent = data.message;
+
+                const actionRefreshMap = {
+                    weekly_report: reloadScopedData,
+                    configure_alert: loadAlerts,
+                    export_stats: loadMetrics,
+                    quality_check: async () => {
+                        await loadHealthStats();
+                        await reloadScopedData();
+                    },
+                    clean_data: async () => {
+                        await loadAlerts();
+                        await loadHealthStats();
+                    },
+                    backup_data: async () => {
+                        await loadAlerts();
+                        await loadHealthStats();
+                    },
+                    user_management: async () => {
+                        await loadAlerts();
+                        await loadHealthStats();
+                    },
+                    system_logs: async () => {
+                        await loadAlerts();
+                        await loadHealthStats();
+                    },
+                };
+
+                if (actionRefreshMap[action]) {
+                    await actionRefreshMap[action]();
+                }
+            } catch (err) {
+                statusEl.textContent = '请求失败，请检查服务是否正常。';
+            } finally {
+                analysisState.actionBusy = false;
+                actionButtons.forEach(btn => {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                });
+            }
+        }
+
+        async function loadAlerts() {
+            if (alertsLoading) {
+                return;
+            }
+
+            alertsLoading = true;
+            const listEl = document.getElementById('alertList');
+            try {
+                const resp = await fetch('/admin/api/alerts');
+                const data = await resp.json();
+                if (!resp.ok) {
+                    listEl.innerHTML = '<li class="alert-item"><span>无法加载告警数据</span><span>--</span></li>';
+                    return;
+                }
+
+                const items = Array.isArray(data.items) ? data.items : [];
+                latestAlertCount = items.length;
+                if (!items.length) {
+                    listEl.innerHTML = '<li class="alert-item"><span>当前暂无告警</span><span>--</span></li>';
+                    renderHealthStatus();
+                    return;
+                }
+
+                listEl.innerHTML = items.map(item => {
+                    return `<li class="alert-item"><span>${escapeHtml(item.content)}（${escapeHtml(item.level)}）</span><span>${escapeHtml(item.time)}</span></li>`;
+                }).join('');
+                renderHealthStatus();
+            } catch (err) {
+                listEl.innerHTML = '<li class="alert-item"><span>网络异常，告警流加载失败</span><span>--</span></li>';
+                latestAlertCount = 0;
+                renderHealthStatus(false);
+            } finally {
+                alertsLoading = false;
+            }
+        }
+
+        function startAlertsPolling() {
+            if (alertsTimer) {
+                clearInterval(alertsTimer);
+            }
+            alertsTimer = setInterval(loadAlerts, 5000);
+        }
+
+        function setHealthTag(elementId, text, level) {
+            const el = document.getElementById(elementId);
+            if (!el) {
+                return;
+            }
+            el.className = `tag ${level === 'ok' ? 'tag-ok' : level === 'danger' ? 'tag-danger' : 'tag-warn'}`;
+            el.textContent = text;
+        }
+
+        function renderHealthStatus(apiOk = true) {
+            const inst = Number(document.getElementById('kpiInst').textContent);
+            const batch = Number(document.getElementById('kpiBatch').textContent);
+
+            if (apiOk) {
+                setHealthTag('healthApi', '正常', 'ok');
+            } else {
+                setHealthTag('healthApi', '异常', 'danger');
+            }
+
+            if (latestAlertCount >= 8) {
+                setHealthTag('healthAlerts', `${latestAlertCount} 条`, 'danger');
+            } else if (latestAlertCount >= 3) {
+                setHealthTag('healthAlerts', `${latestAlertCount} 条`, 'warn');
+            } else {
+                setHealthTag('healthAlerts', `${latestAlertCount} 条`, 'ok');
+            }
+
+            if (Number.isFinite(inst) && inst > 0 && Number.isFinite(batch) && batch > 0) {
+                setHealthTag('healthIntegrity', '较完整', 'ok');
+            } else if (Number.isFinite(inst) && inst > 0) {
+                setHealthTag('healthIntegrity', '部分缺失', 'warn');
+            } else {
+                setHealthTag('healthIntegrity', '不足', 'danger');
+            }
+        }
+
+        async function loadHealthStats() {
+            const panel = document.getElementById('apiData');
+            try {
+                const resp = await fetch(withScope('/api/health-stats'));
+                const data = await resp.json();
+                if (!resp.ok) {
+                    throw new Error(data.error || '接口返回异常');
+                }
+                panel.textContent = JSON.stringify(data, null, 2);
+                document.getElementById('apiScopeNote').textContent = `当前范围: ${data.scope_label || analysisState.scopeLabel}`;
+
+                const inst = data.institution_count ?? data.inst_count ?? '--';
+                const batch = data.metric_count ?? '--';
+                const risk = data.risk_events ?? data.risk_count ?? '--';
+                
+                // 计算数据来源分布
+                const guangxi = data.news_count ?? 0;
+                const source_label = analysisState.scope === 'all' ? `${data.news_count || 0} 条` : `${analysisState.scope === 'guangxi' ? '广西' : '国家'}`;
+
+                document.getElementById('kpiInst').textContent = inst;
+                document.getElementById('kpiBatch').textContent = batch;
+                document.getElementById('kpiRisk').textContent = risk;
+                document.getElementById('kpiSource').textContent = data.scope_label?.replace('（', '\n(') || '多源';
+            } catch (err) {
+                panel.textContent = '无法获取统计数据，请检查后端接口或 Redis 服务。';
+                document.getElementById('kpiInst').textContent = '--';
+                document.getElementById('kpiBatch').textContent = '--';
+                document.getElementById('kpiRisk').textContent = '--';
+                document.getElementById('kpiSource').textContent = '离线';
+                renderHealthStatus(false);
+                return;
+            }
+            renderHealthStatus(true);
+        }
+
+        function withScope(path) {
+            const separator = path.includes('?') ? '&' : '?';
+            return `${path}${separator}scope=${encodeURIComponent(analysisState.scope)}`;
+        }
+
+        function renderYearSelector(yearMin, yearMax, selectedYear) {
+            const selector = document.getElementById('yearSelector');
+            
+            // 清空现有选项（保留"不限年份"选项）
+            while (selector.options.length > 1) {
+                selector.remove(1);
+            }
+
+            // 即使没有年份数据，也不要禁用选择器
+            selector.disabled = false;
+            
+            // 如果有有效年份数据，添加年份选项
+            if (yearMin && yearMax && yearMax >= yearMin) {
+                const minYear = Number(yearMin);
+                const maxYear = Number(yearMax);
+                analysisState.newsYearMin = minYear;
+                analysisState.newsYearMax = maxYear;
+                
+                // 添加年份选项（从最新到最旧）
+                for (let year = maxYear; year >= minYear; year--) {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = `${year} 年`;
+                    selector.appendChild(option);
+                }
+            } else {
+                // 如果没有年份数据，使用默认的年份范围（2015-2026）
+                analysisState.newsYearMin = 2015;
+                analysisState.newsYearMax = 2026;
+                
+                // 添加默认年份选项（从最新到最旧）
+                for (let year = 2026; year >= 2015; year--) {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = `${year} 年`;
+                    selector.appendChild(option);
+                }
+            }
+
+            // 设置选中的年份
+            const currentYear = Number(selectedYear) || '';
+            analysisState.newsYear = currentYear;
+            selector.value = currentYear;
+        }
+
+        function scheduleRegionNewsReload() {
+            if (analysisState.newsYearTimer) {
+                clearTimeout(analysisState.newsYearTimer);
+            }
+            analysisState.newsYearTimer = setTimeout(() => {
+                loadRegionNews();
+            }, 180);
+        }
+
+        function renderYearbookCounts(yearCounts) {
+            const container = document.getElementById('yearbookCounts');
+            if (!Array.isArray(yearCounts) || !yearCounts.length) {
+                container.innerHTML = '<span>暂无年度分布</span>';
+                return;
+            }
+
+            container.innerHTML = yearCounts
+                .slice(0, 10)
+                .map(item => `<span>${escapeHtml(item.year)} 年: ${formatNumber(item.count)} 条</span>`)
+                .join('');
+        }
+
+        async function loadTjnbYearbook() {
+            const listEl = document.getElementById('yearbookList');
+            const metaEl = document.getElementById('yearbookMeta');
+
+            try {
+                const resp = await fetch(withScope('/api/news/tjnb'));
+                const data = await resp.json();
+                if (!resp.ok) {
+                    throw new Error(data.error || '接口返回异常');
+                }
+
+                const items = Array.isArray(data.items) ? data.items : [];
+                const meta = data.meta || {};
+                renderYearbookCounts(data.year_counts || []);
+
+                if (meta.message) {
+                    metaEl.textContent = meta.message;
+                } else {
+                    metaEl.textContent = `范围: ${meta.scope_label || analysisState.scopeLabel} · 最小年份: ${meta.min_year || '--'} · 条目: ${meta.total || 0} · 有效统计条目: ${meta.useful_total || 0}`;
+                }
+
+                if (!items.length) {
+                    listEl.innerHTML = '<li class="alert-item"><span>当前范围暂无统计年报数据</span><span>--</span></li>';
+                    return;
+                }
+
+                listEl.innerHTML = items.slice(0, 12).map(item => {
+                    const yearText = item.report_year ? `${item.report_year}年` : '--';
+                    const usefulTag = item.is_useful ? '有效' : '参考';
+                    return `<li class="alert-item"><span>[${escapeHtml(yearText)}][${escapeHtml(item.category || '--')}][${usefulTag}] <a href="${escapeHtml(item.link || '#')}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.title || '--')}</a></span><span>${escapeHtml(item.publish_date || '--')}</span></li>`;
+                }).join('');
+            } catch (err) {
+                metaEl.textContent = '统计年报加载失败';
+                listEl.innerHTML = '<li class="alert-item"><span>统计年报接口异常</span><span>--</span></li>';
+                renderYearbookCounts([]);
+            }
+        }
+
+        async function loadRegionNews() {
+            const listEl = document.getElementById('regionNewsList');
+            const metaEl = document.getElementById('regionNewsMeta');
+            try {
+                const url = analysisState.newsYear ? `${withScope('/api/news/region')}&year=${encodeURIComponent(analysisState.newsYear)}` : withScope('/api/news/region');
+                const resp = await fetch(url);
+                const data = await resp.json();
+                if (!resp.ok) {
+                    throw new Error(data.error || '接口返回异常');
+                }
+
+                analysisState.scopeLabel = data.scope_label || analysisState.scopeLabel;
+                metaEl.textContent = `当前范围: ${analysisState.scopeLabel}`;
+                document.getElementById('apiScopeNote').textContent = `当前范围: ${analysisState.scopeLabel}`;
+
+                // 使用新的年份选择器函数
+                renderYearSelector(data.year_min, data.year_max, data.selected_year || analysisState.newsYear || data.year_max);
+
+                const items = Array.isArray(data.items) ? data.items : [];
+                listEl.innerHTML = items.map(item => {
+                    const sourceText = item.source === 'national' ? '国家' : item.source === 'guangxi' ? '省级' : '--';
+                    return `<li class="alert-item" onclick="showNewsDetail(${item.id}, '${escapeHtml(item.title)}', '${item.source}', '${escapeHtml(item.publish_date || '--')}', '${item.link || ''}')" style="cursor: pointer;">
+                        <span>[${sourceText}] ${escapeHtml(item.title)}</span><span>${escapeHtml(item.publish_date || '--')}</span>
+                    </li>`;
+                }).join('');
+
+                if (items.length === 0) {
+                    listEl.innerHTML = '<li class="alert-item"><span>该年份暂无数据</span><span>--</span></li>';
+                }
+            } catch (err) {
+                listEl.innerHTML = '<li class="alert-item"><span>加载失败</span><span>--</span></li>';
+            }
+        }
+
+        // 显示新闻详情函数
+        function showNewsDetail(id, title, source, publishDate, link) {
+            const modal = document.getElementById('newsDetailModal');
+            const sourceText = source === 'national' ? '国家卫健委' : source === 'guangxi' ? '广西卫健委' : '未知来源';
+            const year = publishDate && publishDate.match(/^\d{4}/) ? publishDate.substring(0, 4) : '--';
+            
+            // 填充模态框内容
+            document.getElementById('newsDetailTitle').textContent = title;
+            document.getElementById('newsDetailSource').textContent = sourceText;
+            document.getElementById('newsDetailDate').textContent = publishDate;
+            document.getElementById('newsDetailYear').textContent = year;
+            
+            // 设置新闻内容 - 简化显示，移除冗余信息
+            document.getElementById('newsDetailContent').innerHTML = `
+                <p><strong>新闻ID:</strong> ${id}</p>
+                <p><em>注：如需查看详细内容，请点击下方链接访问原文。</em></p>
+            `;
+            
+            // 设置链接
+            const linkElement = document.getElementById('newsDetailLink');
+            if (link && link !== '' && link !== 'undefined' && link !== 'null') {
+                linkElement.href = link;
+                linkElement.textContent = '查看原文链接';
+                linkElement.style.display = 'inline';
+                linkElement.style.color = '#0e7490';
+                linkElement.style.textDecoration = 'none';
+            } else {
+                linkElement.textContent = '暂无原文链接';
+                linkElement.href = '#';
+                linkElement.style.display = 'inline';
+                linkElement.style.color = '#999';
+                linkElement.style.textDecoration = 'none';
+                linkElement.onclick = (e) => {
+                    e.preventDefault();
+                    return false;
+                };
+            }
+            
+            // 显示模态框
+            modal.style.display = 'flex';
+        }
+
+        // 新闻详情模态框关闭功能
+        document.getElementById('newsDetailCloseBtn').addEventListener('click', () => {
+            document.getElementById('newsDetailModal').style.display = 'none';
+        });
+
+        // 点击模态框外部关闭
+        document.getElementById('newsDetailModal').addEventListener('click', (e) => {
+            if (e.target.id === 'newsDetailModal') {
+                e.target.style.display = 'none';
+            }
+        });
+
+        async function loadMetrics() {
+            const container = document.getElementById('metricsData');
+            try {
+                const resp = await fetch(withScope('/api/metrics/summary'));
+                const data = await resp.json();
+                if (!resp.ok) {
+                    throw new Error(data.error || '接口返回异常');
+                }
+
+                analysisState.scopeLabel = data.meta?.scope_label || analysisState.scopeLabel;
+
+                if (!data.data || data.data.length === 0) {
+                    container.innerHTML = `<p style="color: #999; text-align: center;">${analysisState.scopeLabel}暂无结构化指标数据</p>`;
+                    return;
+                }
+
+                let html = `<div style="font-size: 12px; color: #666; margin-bottom: 12px;">范围: ${analysisState.scopeLabel} · 覆盖 ${data.meta?.year_min || '--'} 至 ${data.meta?.year_max || '--'} 年，共 ${data.total_reports} 个年度分组，${data.data.reduce((sum, r) => sum + r.metric_count, 0)} 类核心指标</div>`;
+
+                data.data.forEach(report => {
+                    html += `
+                        <div style="margin-bottom: 16px; padding: 12px; background: #fafbfc; border-radius: 8px; border-left: 4px solid #0e7490;">
+                            <h4 style="margin: 0 0 6px 0; color: #0e7490; font-size: 13px;">${report.title}</h4>
+                            <div style="font-size:11px; color:#7a8f9e; margin-bottom:10px;">来源: ${report.category || '结构化数据'} · 指标数: ${report.metric_count}</div>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
+                    `;
+                    
+                    if (report.metrics && report.metrics.length > 0) {
+                        report.metrics.forEach(metric => {
+                            html += `
+                                <div style="padding: 8px; background: white; border-radius: 6px; border: 1px solid #e0e0e0;">
+                                    <div style="font-size: 11px; color: #999; margin-bottom: 4px;">${metric.metric_name}</div>
+                                    <div style="font-size: 14px; font-weight: 600; color: #0e7490;">${metric.metric_value}</div>
+                                    <div style="font-size: 10px; color: #6f8593;">单位: ${metric.unit || '--'} · 样本: ${metric.sample_count || 0}</div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        html += `<p style="color: #bbb;">暂无指标</p>`;
+                    }
+                    
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+            } catch (err) {
+                container.innerHTML = `<p style="color: #e74c3c; text-align: center;">加载失败: ${err.message}</p>`;
+            }
+        }
+
+        async function loadAnalysisStatus() {
+            try {
+                const resp = await fetch(withScope('/api/analysis/module-status'));
+                const data = await resp.json();
+                if (!resp.ok) {
+                    throw new Error(data.error || '接口返回异常');
+                }
+
+                analysisState.scopeLabel = data.meta?.scope_label || analysisState.scopeLabel;
+                analysisState.modules = data.data || [];
+                analysisState.meta = data.meta || null;
+                renderAnalysisOverview();
+                renderModuleStatus();
+            } catch (err) {
+                document.getElementById('moduleStatusData').innerHTML = `<p style="color:#e74c3c;">加载失败: ${err.message}</p>`;
+                document.getElementById('analysisOverview').innerHTML = `<div class="analysis-note" style="color:#e74c3c;">加载失败: ${err.message}</div>`;
+            }
+        }
+
+        async function loadAnalysisSummary() {
+            try {
+                const resp = await fetch(withScope('/api/analysis/data-summary'));
+                const data = await resp.json();
+                if (!resp.ok) {
+                    throw new Error(data.error || '接口返回异常');
+                }
+
+                analysisState.scopeLabel = data.meta?.scope_label || analysisState.scopeLabel;
+                analysisState.populationRows = data.data.population_by_district || [];
+                analysisState.metricRows = data.data.yearly_metrics || [];
+
+                renderAnalysisOverview();
+                renderPopulationSection();
+                renderMetricTabs();
+                renderMetricSection();
+                renderMetricPreviewTable();
+
+                document.getElementById('populationMeta').textContent = analysisState.populationRows.length ? `共 ${analysisState.populationRows.length} 个区县` : '无可用数据';
+            } catch (err) {
+                document.getElementById('analysisOverview').innerHTML = `<div class="analysis-note" style="color:#e74c3c;">加载失败: ${err.message}</div>`;
+                document.getElementById('populationSummaryTable').innerHTML = `<div class="analysis-note" style="color:#e74c3c;">加载失败: ${err.message}</div>`;
+                document.getElementById('metricPreviewTable').innerHTML = `<div class="analysis-note" style="color:#e74c3c;">加载失败: ${err.message}</div>`;
+                document.getElementById('moduleStatusData').innerHTML = `<p style="color:#e74c3c;">加载失败: ${err.message}</p>`;
+                drawEmpty(document.getElementById('populationChart'), '人口图表加载失败');
+                drawEmpty(document.getElementById('metricChart'), 'OCR 趋势图加载失败');
+            }
+        }
+
+        async function reloadScopedData() {
+            await loadHealthStats();
+            await loadRegionNews();
+            await loadTjnbYearbook();
+            await loadMetrics();
+            await loadAnalysisStatus();
+            await loadAnalysisSummary();
+        }
+
+        document.querySelectorAll('[data-action]').forEach(btn => {
+            btn.addEventListener('click', () => runAdminAction(btn.dataset.action));
+        });
+
+        document.getElementById('refreshAlerts').addEventListener('click', loadAlerts);
+        document.getElementById('refreshApi').addEventListener('click', loadHealthStats);
+        document.getElementById('refreshRegionNews').addEventListener('click', loadRegionNews);
+        document.getElementById('refreshYearbook').addEventListener('click', loadTjnbYearbook);
+        document.getElementById('refreshMetrics').addEventListener('click', loadMetrics);
+        document.getElementById('refreshAnalysis').addEventListener('click', async () => {
+            await loadAnalysisStatus();
+            await loadAnalysisSummary();
+        });
+        document.getElementById('scopeSelector').addEventListener('change', async (event) => {
+            analysisState.scope = event.target.value;
+            analysisState.modalModuleKey = null;
+            analysisState.modalMetricKey = null;
+            analysisState.newsYear = 0;
+            closeModuleModal();
+            await reloadScopedData();
+        });
+        document.getElementById('moduleModalClose').addEventListener('click', closeModuleModal);
+        document.getElementById('moduleModal').addEventListener('click', (event) => {
+            if (event.target.id === 'moduleModal') {
+                closeModuleModal();
+            }
+        });
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                if (alertsTimer) {
+                    clearInterval(alertsTimer);
+                    alertsTimer = null;
+                }
+                return;
+            }
+
+            loadAlerts();
+            startAlertsPolling();
+        });
+
+        /* ============ 单页应用导航逻辑 ============ */
+        function initSPANavigation() {
+            const navItems = document.querySelectorAll('.sidebar-menu .nav-item');
+            const sections = document.querySelectorAll('section[data-section]');
+            let currentSection = 'overview';
+            let showAllMode = false;
+
+            // 创建"显示全部"按钮
+            const showAllBtn = document.createElement('button');
+            showAllBtn.className = 'show-all-btn';
+            showAllBtn.textContent = '显示全部';
+            document.body.appendChild(showAllBtn);
+
+            // 初始化：只显示核心概览模块
+            switchToSection('overview');
+
+            // 点击导航项
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const sectionId = item.getAttribute('data-section');
+                    
+                    // 移除所有active类
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    // 添加active类到当前项
+                    item.classList.add('active');
+                    
+                    // 切换到对应模块
+                    switchToSection(sectionId);
+                    showAllMode = false;
+                    showAllBtn.textContent = '显示全部';
+                });
+            });
+
+            // "显示全部"按钮点击事件
+            showAllBtn.addEventListener('click', () => {
+                if (showAllMode) {
+                    // 如果当前是显示全部模式，切换回当前选中的模块
+                    switchToSection(currentSection);
+                    showAllMode = false;
+                    showAllBtn.textContent = '显示全部';
+                } else {
+                    // 切换到显示全部模式
+                    showAllSections();
+                    showAllMode = true;
+                    showAllBtn.textContent = '返回单页';
+                }
+            });
+
+            // 切换到指定模块
+            function switchToSection(sectionId) {
+                currentSection = sectionId;
+                
+                // 隐藏所有模块
+                sections.forEach(section => {
+                    section.classList.add('hidden');
+                    section.classList.remove('active');
+                });
+                
+                // 显示目标模块（可能有多个section具有相同的data-section值）
+                const targetSections = document.querySelectorAll(`section[data-section="${sectionId}"]`);
+                if (targetSections.length > 0) {
+                    targetSections.forEach(section => {
+                        section.classList.remove('hidden');
+                        section.classList.add('active');
+                    });
+                    
+                    // 滚动到顶部
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            }
+
+            // 显示所有模块
+            function showAllSections() {
+                sections.forEach(section => {
+                    section.classList.remove('hidden');
+                    section.classList.add('active');
+                });
+                
+                // 滚动到顶部
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            // 禁用滚动导航（根据用户要求）
+            function updateScrollBehavior() {
+                if (!showAllMode) {
+                    // 在单页模式下，允许模块内部滚动，但防止滚动到其他模块
+                    document.body.style.overflow = 'auto';
+                    document.documentElement.style.overflow = 'auto';
+                    
+                    // 监听滚动事件，防止滚动到其他模块
+                    const activeSection = document.querySelector(`section[data-section="${currentSection}"].active`);
+                    if (activeSection) {
+                        // 确保页面在顶部
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        
+                        // 监听滚动，如果滚动超出当前模块，则回到模块顶部
+                        const sectionRect = activeSection.getBoundingClientRect();
+                        const sectionTop = sectionRect.top + window.scrollY;
+                        const sectionBottom = sectionTop + sectionRect.height;
+                        
+                        window.addEventListener('scroll', handleSinglePageScroll);
+                    }
+                } else {
+                    // 在显示全部模式下，允许滚动
+                    document.body.style.overflow = 'auto';
+                    document.documentElement.style.overflow = 'auto';
+                    // 移除滚动监听器
+                    window.removeEventListener('scroll', handleSinglePageScroll);
+                }
+            }
+            
+            // 单页模式滚动处理函数
+            function handleSinglePageScroll() {
+                // 此函数现在为空，不再强制滚动限制
+                // 用户可以自由滚动到页面顶部和底部
+            }"].active`);
+                if (!activeSection) return;
+                
+                const sectionRect = activeSection.getBoundingClientRect();
+                const sectionTop = sectionRect.top + window.scrollY;
+                const sectionBottom = sectionTop + sectionRect.height;
+                const currentScroll = window.scrollY;
+                
+                // 只在滚动超出模块边界时才触发
+                // 允许滚动到模块顶部，但防止滚动到其他模块
+                const tolerance = 10; // 减少容错范围到10px
+                
+                // 如果滚动到模块上方（超出模块顶部）
+                // 只有当滚动位置明显低于模块顶部时才触发
+                if (currentScroll < sectionTop - tolerance) {
+                    window.scrollTo({ top: sectionTop, behavior: 'smooth' });
+                }
+                // 如果滚动到模块下方（超出模块底部）
+                else if (currentScroll > sectionBottom + tolerance) {
+                    window.scrollTo({ top: sectionTop, behavior: 'smooth' });
+                }
+                // 如果用户在模块顶部附近（sectionTop到sectionTop+tolerance之间），允许自由滚动
+                // 这样可以避免在顶部附近频繁触发限制
+            }
+            
+            // 初始设置滚动行为
+            updateScrollBehavior();
+            
+            // 监听模式变化
+            showAllBtn.addEventListener('click', () => {
+                setTimeout(updateScrollBehavior, 10);
+            });
+            
+            // 监听导航项点击
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    setTimeout(updateScrollBehavior, 10);
+                });
+            });
+        }
+
+        /* ============ 左侧索引栏交互逻辑 ============ */
+        function initSidebarNavigation() {
+            const navItems = document.querySelectorAll('.sidebar-menu .nav-item');
+            const sections = [
+                { id: 'core-overview', selector: '.kpi-grid' },
+                { id: 'region-news', selector: '#regionNewsList' },
+                { id: 'statistical-yearbook', selector: '#yearbookList' },
+                { id: 'structured-metrics', selector: '#metricsData' },
+                { id: 'analysis-modules', selector: '#analysisOverview' }
+            ];
+
+            // 点击导航项
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = item.getAttribute('href').substring(1);
+                    
+                    // 移除所有active类
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    // 添加active类到当前项
+                    item.classList.add('active');
+                    
+                    // 平滑滚动到目标位置
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    } else {
+                        // 如果没有对应的id，尝试滚动到选择器对应的元素
+                        const section = sections.find(s => s.id === targetId);
+                        if (section) {
+                            const element = document.querySelector(section.selector);
+                            if (element) {
+                                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                        }
+                    }
+                });
+            });
+
+            // 滚动时高亮当前章节（仅在显示全部模式下生效）
+            function updateActiveNavItem() {
+                // 检查是否在单页模式下
+                const showAllBtn = document.querySelector('.show-all-btn');
+                const isShowAllMode = showAllBtn && showAllBtn.textContent === '返回单页';
+                
+                // 如果在单页模式下，不更新导航项高亮
+                if (!isShowAllMode) {
+                    return;
+                }
+                
+                const scrollPosition = window.scrollY + 100;
+                
+                // 找到当前可见的章节
+                let currentSectionId = 'core-overview';
+                
+                for (const section of sections) {
+                    const element = document.getElementById(section.id) || document.querySelector(section.selector);
+                    if (element) {
+                        const rect = element.getBoundingClientRect();
+                        const elementTop = rect.top + window.scrollY;
+                        const elementBottom = elementTop + rect.height;
+                        
+                        if (scrollPosition >= elementTop && scrollPosition < elementBottom) {
+                            currentSectionId = section.id;
+                            break;
+                        }
+                    }
+                }
+                
+                // 更新导航项状态
+                navItems.forEach(item => {
+                    const itemId = item.getAttribute('href').substring(1);
+                    if (itemId === currentSectionId) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+            }
+
+            // 监听滚动事件
+            window.addEventListener('scroll', () => {
+                updateActiveNavItem();
+            });
+
+            // 初始更新
+            updateActiveNavItem();
+
+            // 响应式：小屏幕汉堡菜单
+            const topbar = document.querySelector('.topbar');
+            const sidebar = document.querySelector('.sidebar-nav');
+            
+            if (window.innerWidth <= 1024) {
+                // 添加汉堡菜单点击事件
+                topbar.addEventListener('click', (e) => {
+                    if (e.target === topbar || e.target.classList.contains('topbar')) {
+                        sidebar.classList.toggle('show');
+                    }
+                });
+                
+                // 点击侧边栏外部关闭
+                document.addEventListener('click', (e) => {
+                    if (sidebar.classList.contains('show') && 
+                        !sidebar.contains(e.target) && 
+                        e.target !== topbar) {
+                        sidebar.classList.remove('show');
+                    }
+                });
+            }
+        }
+
+        // 初始化侧边栏导航
+        initSidebarNavigation();
+
+        // 初始化单页应用导航
+        initSPANavigation();
+
+        // 添加年份选择器事件监听器
+        document.getElementById('yearSelector').addEventListener('change', (event) => {
+            const selectedYear = event.target.value;
+            analysisState.newsYear = selectedYear ? Number(selectedYear) : 0;
+            scheduleRegionNewsReload();
+        });
+
+        loadAlerts();
+        startAlertsPolling();
+        reloadScopedData();
+
+        /* ============ 文档上传模态框逻辑 ============ */
+        let uploadCurrentData = null;
+        let uploadCurrentTable = null;
+
+        const uploadModal = document.getElementById('uploadModal');
+        const uploadFileInput = document.getElementById('uploadFileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const uploadAlert = document.getElementById('uploadAlert');
+        const uploadProgress = uploadModal.querySelector('.upload-progress');
+        const uploadProgressBar = uploadModal.querySelector('.upload-progress-bar');
+
+        // 打开模态框
+        document.getElementById('openUploadModal').addEventListener('click', () => {
+            uploadModal.classList.add('show');
+            resetUploadUI();
+        });
+
+        // 关闭模态框
+        document.getElementById('uploadCloseBtn').addEventListener('click', () => {
+            uploadModal.classList.remove('show');
+        });
+
+        // 点击模态框外部关闭
+        uploadModal.addEventListener('click', (e) => {
+            if (e.target.id === 'uploadModal') {
+                uploadModal.classList.remove('show');
+            }
+        });
+
+        // 拖拽上传
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = '#f0f7ff';
+            uploadArea.style.borderColor = '#0e7490';
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.background = '';
+            uploadArea.style.borderColor = '';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = '';
+            uploadArea.style.borderColor = '';
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                uploadFileInput.files = files;
+                handleUploadFileSelect();
+            }
+        });
+
+        // 文件输入改变
+        uploadFileInput.addEventListener('change', handleUploadFileSelect);
+
+        function handleUploadFileSelect() {
+            const file = uploadFileInput.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            uploadProgress.style.display = 'block';
+            uploadProgressBar.style.width = '30%';
+            hideUploadAlert();
+
+            fetch('/upload/preview', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                uploadProgressBar.style.width = '100%';
+                setTimeout(() => {
+                    uploadProgress.style.display = 'none';
+                }, 300);
+
+                if (data.success) {
+                    uploadCurrentData = data.data || [];
+                    uploadCurrentTable = data.target_table || 'unknown';
+                    renderUploadPreview(data.data || [], data.target_table);
+                    showUploadAlert('文件解析成功！', 'success');
+                } else {
+                    showUploadAlert('解析失败: ' + (data.message || '未知错误'), 'error');
+                }
+            })
+            .catch(err => {
+                uploadProgress.style.display = 'none';
+                showUploadAlert('请求失败: ' + err.message, 'error');
+            });
+
+            uploadFileInput.value = '';
+        }
+
+        function renderUploadPreview(data, table) {
+            const preview = document.querySelector('.upload-preview');
+            const thead = document.querySelector('#uploadPreviewTable thead tr');
+            const tbody = document.querySelector('#uploadPreviewTable tbody');
+
+            document.getElementById('uploadTargetTable').textContent = table;
+            thead.innerHTML = '';
+            tbody.innerHTML = '';
+
+            if (!data || data.length === 0) {
+                preview.style.display = 'none';
+                return;
+            }
+
+            const keys = Object.keys(data[0]);
+            keys.forEach(k => {
+                const th = document.createElement('th');
+                th.textContent = k;
+                thead.appendChild(th);
+            });
+
+            data.slice(0, 10).forEach(row => {
+                const tr = document.createElement('tr');
+                keys.forEach(k => {
+                    const td = document.createElement('td');
+                    td.textContent = row[k] !== null && row[k] !== undefined ? row[k] : '';
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+
+            preview.style.display = 'block';
+        }
+
+        document.getElementById('uploadConfirmBtn').addEventListener('click', confirmUpload);
+        document.getElementById('uploadCancelBtn').addEventListener('click', () => {
+            document.querySelector('.upload-preview').style.display = 'none';
+            resetUploadUI();
+        });
+
+        function confirmUpload() {
+            if (!uploadCurrentData || !uploadCurrentTable) return;
+
+            const btn = document.getElementById('uploadConfirmBtn');
+            btn.disabled = true;
+            btn.textContent = '入库中...';
+
+            fetch('/upload/confirm', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    target_table: uploadCurrentTable,
+                    data: uploadCurrentData
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.disabled = false;
+                btn.textContent = '确认入库';
+                if (data.success) {
+                    showUploadAlert(`入库成功！共导入 ${data.inserted_count} 条数据。`, 'success');
+                    setTimeout(() => {
+                        uploadModal.classList.remove('show');
+                    }, 2000);
+                } else {
+                    showUploadAlert('入库失败: ' + (data.message || '未知错误'), 'error');
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.textContent = '确认入库';
+                showUploadAlert('请求失败: ' + err.message, 'error');
+            });
+        }
+
+        function showUploadAlert(msg, type) {
+            uploadAlert.textContent = msg;
+            uploadAlert.className = 'upload-alert show upload-alert-' + type;
+        }
+
+        function hideUploadAlert() {
+            uploadAlert.className = 'upload-alert';
+        }
+
+        function resetUploadUI() {
+            uploadFileInput.value = '';
+            document.querySelector('.upload-preview').style.display = 'none';
+            uploadProgress.style.display = 'none';
+            hideUploadAlert();
+            uploadProgressBar.style.width = '0%';
+        }
+    </script>
+</body>
+</html>
